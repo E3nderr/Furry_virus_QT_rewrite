@@ -119,6 +119,7 @@ class MainWindow(QMainWindow):
 
         self.security_code_input = SecurityCodeLineEdit()  # Custom input for security code
         self.security_code_input.setFixedWidth(300)  # Set a smaller width for security code
+        self.security_code_input.setEchoMode(QLineEdit.Password)
 
         # Create and set font and center alignment for labels
         card_number_label = QLabel("Card number:")
