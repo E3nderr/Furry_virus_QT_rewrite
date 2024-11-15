@@ -9,10 +9,15 @@ from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QDesktopWidget, Q
 from resource_images import image_base64_data  # Import the generated base64 data
 from multiprocessing import Process
 from screeninfo import get_monitors
-
 os.system('cls')
+
+# 11/15/24
+# Force a BSOD 
+# Implement a way for the program to know its own history and set a way to toggle destructive mode so I can still program this
+
+
 def base64_to_pixmap(base64_str):
-    """Convert the base64 string back to a QPixmap."""
+    # Convert the base64 string back to a QPixmap.
     image_data = base64.b64decode(base64_str)
     pixmap = QPixmap()
     pixmap.loadFromData(image_data)
@@ -203,14 +208,14 @@ class ThankYouWindow(QDialog):
         QTimer.singleShot(2000, self.open_btw_window)
 
     def center_window(self):
-        """Centers the window on the screen."""
+        # Centers the window on the screen."""
         qt_rectangle = self.frameGeometry()
         center_point = QDesktopWidget().availableGeometry().center()
         qt_rectangle.moveCenter(center_point)
         self.move(qt_rectangle.topLeft())
 
     def open_btw_window(self):
-        """Opens the BTW window."""
+        # Opens the BTW window."""
         self.close()  # Close this window before opening the next
         btw_window = BTWWindow()
         btw_window.exec_()  # Display the new window
@@ -260,36 +265,45 @@ def create_funny_window_process(phrase):
     # Get available monitors using screeninfo
     monitors = get_monitors()
 
-    if monitors:
-        # Randomly select a monitor
-        monitor = random.choice(monitors)  # Randomly choose a monitor
-        screen_width = monitor.width
-        screen_height = monitor.height
-        monitor_x = monitor.x
-        monitor_y = monitor.y
+    def print_monitor_layout():
+        monitors = get_monitors()
+        for i, monitor in enumerate(monitors):
+            print(f"Monitor {i + 1}: x={monitor.x}, y={monitor.y}, width={monitor.width}, height={monitor.height}, primary={monitor.is_primary}")
 
-        # Set a random position within the selected monitor's dimensions
-        random_x = random.randint(monitor_x, screen_width - 200)
-        random_y = random.randint(monitor_y, screen_height - 100)
-        
-        # Set the window's position on the selected monitor
-        window.setGeometry(random_x, random_y, 200, 100)  # Position the window within the monitor
 
-    # Create a label with the desired phrase and style
+        if monitors:
+            # Randomly select a monitor
+            monitor = random.choice(monitors)
+            monitor_x = monitor.x
+            monitor_y = monitor.y
+            screen_width = monitor.width
+            screen_height = monitor.height
+
+            # Set a random position within the selected monitor's dimensions
+            random_x = random.randint(0, screen_width - 200) + monitor_x
+            random_y = random.randint(0, screen_height - 100) + monitor_y
+
+            # Ensure the window stays within the monitor's bounds
+            window.setGeometry(random_x, random_y, 200, 100)
+        else:
+            window.setGeometry(100, 100, 200, 100)  # Default placement if no monitors are detected
+
+    # Print monitor layout for debugging 
+    print_monitor_layout()
+
+    # Set the label and display the window
     funny_label = QLabel(phrase)
     funny_label.setFont(QFont("Arial", 50))
     funny_label.setStyleSheet("color: #ff33ff;")
     funny_label.setAlignment(Qt.AlignCenter)
 
-    # Set up a central widget and layout
     central_widget = QWidget()
     layout = QVBoxLayout(central_widget)
     layout.addWidget(funny_label)
     window.setCentralWidget(central_widget)
-    
-    # Show the window
+
     window.show()
-    sys.exit(app.exec_())  # Start the application event loop for the window
+    sys.exit(app.exec_())
 
 def create_funny_windows(count=0, max_windows=50):
     phrases = ["uwu", "owo", "nya~", "meow", "TwT"]  # List of phrases to display
