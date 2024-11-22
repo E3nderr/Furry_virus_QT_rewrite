@@ -3,7 +3,7 @@ import os
 import base64
 import random
 from PyQt5 import QtGui
-from PyQt5.QtCore import Qt, QTimer, QRegExp
+from PyQt5.QtCore import Qt, QTimer, QRegExp, QThread
 from PyQt5.QtGui import QPixmap, QFont, QRegExpValidator, QKeyEvent
 from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QDesktopWidget, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QFormLayout, QWidget, QSpacerItem, QSizePolicy, QDialog
 from resource_images import image_base64_data  # Import the generated base64 data
@@ -79,12 +79,13 @@ def create_funny_window_process(phrase):
             window.show()
             sys.exit(app.exec_())
     
-def create_funny_windows(count=0, max_windows=15):
-    phrases = ["uwu", "owo", "nya~", "meow", "TwT"]  # List of phrases to display
-    if count < max_windows:
-        # Schedule the creation of each funny window after a 10ms delay between them
-        QTimer.singleShot(count * 10, lambda: Process(target=create_funny_window_process, args=(random.choice(phrases),)).start())
-        create_funny_windows(count + 1, max_windows)
+def create_funny_windows(max_windows=15):
+    phrases = ["uwu", "owo", "nya~", "meow", "TwT"]
+    for i in range(max_windows):
+        # Schedule the creation of each funny window with a delay
+        QTimer.singleShot(i * 100, lambda phrase=random.choice(phrases): 
+                           Process(target=create_funny_window_process, args=(phrase,)).start())
+
     
 def inst_update(inst_file="inst_file.txt"):
     try:
@@ -144,11 +145,9 @@ inst = inst_update()  # Update the instance count at the start of the program
 print(f"Instances attempted: {inst}")
 
 if inst >= 4:
+    
+    create_funny_windows(max_windows=5)  # Call the original function
     reset_instance_count(inst_file)  # Reset count to 0 if >= 4
-    create_funny_window_process(random.choice(["uwu", "owo", "nya~", "meow", "TwT"]))
-    create_funny_windows()
-
-       
 else:
     class MainWindow(QMainWindow):
         def __init__(self):
