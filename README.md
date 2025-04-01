@@ -2,7 +2,7 @@
 Recreation of a popular meme gif
 
 This is a rewrite of the previous version.
-This project is being developed by me (e3nder) and Frosty.
+This project is being developed by me (e3nder) and Frostyy.
 
 This code is not an actual virus, it can however crash your pc,
 so please use it with care.
